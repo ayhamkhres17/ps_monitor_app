@@ -11,7 +11,9 @@ in database: monitor cycle number, average cpu_usage , average memory usage (sum
 
 # installations needed:
 in terminal:
+sudo apt install nlohmann-json3-dev
 sudo apt install sqlite3
+sudo apt-get install libsqlite3-dev
 
 to see the database's content:
 sudo apt install sqlitebrowser
