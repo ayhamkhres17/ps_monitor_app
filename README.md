@@ -11,7 +11,7 @@ in database: monitor cycle number, average cpu_usage , average memory usage (sum
 
 # AI usage
 
-used chatgpt to implement the function that extracts proccess information from the os , it gave me a long while loop which i divided to functions , added the saves to the map, and writing to the file at the end
+used chatgpt to implement the function that extracts proccess information from the os , it gave me a long while loop which i modified and divided to functions , added the saves to the map, and writing to the file at the end
 
 <img width="1590" height="148" alt="Screenshot 2025-07-10 at 15-45-10 Process Monitoring Program" src="https://github.com/user-attachments/assets/e6838065-68b6-414b-8b17-2de2330faba2" />
 
