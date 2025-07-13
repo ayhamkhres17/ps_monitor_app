@@ -219,10 +219,15 @@ ProccesInfo LoadProccessInfo(size_t pid, const std::filesystem::path& proc_path)
     {
         std::getline(comm_file, p_name);
     }
-
+    else
+    {
+        info_logger.write("[warning] comm_file is not open for proccess with pid: " + std::to_string(pid));
+        
+    }
     //memory usage calculation
     std::ifstream status_file(proc_path / "status");
     std::string line;
+    
     while (std::getline(status_file, line)) 
     {
         if (line.rfind("VmRSS:", 0) == 0) 
@@ -255,6 +260,11 @@ ProccesInfo LoadProccessInfo(size_t pid, const std::filesystem::path& proc_path)
             long stime = std::stol(stats[14]);
             cpu_usage = static_cast<double>(utime + stime) / sysconf(_SC_CLK_TCK);
         }
+    }
+    else
+    {
+        info_logger.write("[warning] stat_file is not open for proccess with pid: " + std::to_string(pid));
+
     }
 
     return ProccesInfo(pid, p_name, cpu_usage, memory_usage, std::time(nullptr));
@@ -308,7 +318,7 @@ void MonitorApp::CollectProccesses(const std::set<size_t>& excluded_pids)
 }
 
 
-Status MonitorApp::StartMonitoring() 
+void MonitorApp::StartMonitoring() 
 {
     using namespace std::chrono;
 
@@ -323,58 +333,49 @@ Status MonitorApp::StartMonitoring()
 
 
         sleep(m_monitoring_interval); 
-        try 
+        
+        auto start_time = steady_clock::now();
+        while (duration_cast<seconds>(steady_clock::now() - start_time).count() < m_monitoring_duration) 
         {
-            auto start_time = steady_clock::now();
-            while (duration_cast<seconds>(steady_clock::now() - start_time).count() < m_monitoring_duration) 
-            {
-                CollectProccesses(excluded_pids);
-            }    
-            
+            CollectProccesses(excluded_pids);
+        }    
+        
 
-            // write updated map to CSV file
-            CSV_file.write("monitor_num: " + std::to_string(monitor_num)); 
-            CSV_file.write("pid,p_name,cpu_usage,memory_usage,timestamp");
-            
-            float avg_cpu_usage = 0;
-            float avg_memory_usage = 0;
-            size_t process_count = 0;
+        // write updated map to CSV file
+        CSV_file.write("monitor_num: " + std::to_string(monitor_num)); 
+        CSV_file.write("pid,p_name,cpu_usage,memory_usage,timestamp");
+        
+        float avg_cpu_usage = 0;
+        float avg_memory_usage = 0;
+        size_t process_count = 0;
 
-            for(auto map_member : m_p_info_map)
-            {
-                CSV_file.write(map_member.second.ToString()); //enter p_info string
-                
-                
-                // calculate average CPU and memory usage
-                avg_cpu_usage += map_member.second.cpu_usage;
-                avg_memory_usage += map_member.second.memory_usage;
-                process_count++;
-                
-            }
-            
-            info_logger.write("[info] process info written to CSV file for monitor num: " + std::to_string(monitor_num));
-
-            avg_cpu_usage /= process_count; 
-            avg_memory_usage /= process_count; 
-
-            //enter averages to database
-            if (FAIL == m_db.InsertAvgInfo(monitor_num, avg_cpu_usage, avg_memory_usage) ) 
-            {
-                info_logger.write("[error] failed to insert average info into database for monitor num: " + std::to_string(monitor_num));
-                return FAIL;    
-            }
-
-        }
-        catch (const std::exception& e) 
+        for(auto map_member : m_p_info_map)
         {
-            info_logger.write("[error] exception occurred during monitoring: " + std::string(e.what()));
-            return FAIL;
+            CSV_file.write(map_member.second.ToString()); //enter p_info string
+            
+            
+            // calculate average CPU and memory usage
+            avg_cpu_usage += map_member.second.cpu_usage;
+            avg_memory_usage += map_member.second.memory_usage;
+            process_count++;
+            
         }
+        
+        info_logger.write("[info] process info written to CSV file for monitor num: " + std::to_string(monitor_num));
+
+        avg_cpu_usage /= process_count; 
+        avg_memory_usage /= process_count; 
+
+        //enter averages to database
+        if (FAIL == m_db.InsertAvgInfo(monitor_num, avg_cpu_usage, avg_memory_usage) ) 
+        {
+            info_logger.write("[error] failed to insert average info into database for monitor num: " + std::to_string(monitor_num));
+            throw std::runtime_error("failed to insert average info into database");
+        }
+        
 
     }
     
-
-    return SUCCESS;
 }
 
 
@@ -383,4 +384,5 @@ void MonitorApp::StopMonitoring()
     m_should_stop = true;
     info_logger.write("[info] monitoring stopped");    
 }
+
 
