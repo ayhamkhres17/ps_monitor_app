@@ -40,4 +40,6 @@ used copilot.com to explain to me how to read from a csv file for TestCSVWrite f
 
 <img width="771" height="738" alt="Screenshot from 2025-07-13 08-59-07" src="https://github.com/user-attachments/assets/38a1f355-2a5d-4bc7-802b-b055071ea605" />
 
+makefile is also made with AI
+
 
