@@ -136,7 +136,7 @@ public:
     MonitorApp(const MonitorApp& other) = delete;
     MonitorApp& operator=(const MonitorApp& other) = delete;
     
-    Status StartMonitoring();
+    void StartMonitoring();
     void StopMonitoring();
 
 private:
