@@ -25,6 +25,7 @@ sqlitebrowser (in terminal)
 # how to compile and rnu
 # in terminal
 make
+
 ./ps_monitor_app
 
 # how to exit gracefully:
