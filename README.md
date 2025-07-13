@@ -9,9 +9,22 @@ i used sqlite3 for database.
 proccess info in each line of the CSV , contains: pid, p_name, cpu_usage, memory_usage and timestamp
 in database: monitor cycle number, average cpu_usage , average memory usage (summary of the monitor cycle)
 
+# installations needed:
+in terminal:
+sudo apt install sqlite3
+
+to see the database's content:
+sudo apt install sqlitebrowser
+then after installation run:
+sqlitebrowser (in terminal)
+
 # how to compile and rnu
-g++ src/os_ps_monitor.cpp  ps_monitor_app.cpp -Iinclude -lsqlite3 -o executable_name
-./executable_name
+ g++ -std=c++17 -pedantic-errors -Wall -Wextra -DNDEBUG -O3 src/logger.cpp src/configure_info.cpp src/database.cpp  src/os_ps_monitor.cpp  ps_monitor_app.cpp -Iinclude -lsqlite3 -o ps_monitor_app 
+ ./ps_monitor_app
+
+# how to exit gracefully:
+  CTRL+C
+
 # or use the executable 
 ./ps_monitor_app
 
