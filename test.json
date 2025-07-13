@@ -1,0 +1,8 @@
+
+{
+"monitoring_interval": 3,
+"monitoring_duration": 8,
+"db_file_path": "test.db",
+"csv_file_path": "test.csv",
+"excluded_processes": [123, 321]
+}

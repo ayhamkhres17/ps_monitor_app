@@ -1,0 +1,7 @@
+{
+    "monitoring_interval": 3,
+    "monitoring_duration": 5,
+    "db_file_path": "./monitor_avg_summary.db",
+    "csv_file_path": "./process_summary.csv",
+    "excluded_processes": []
+}
